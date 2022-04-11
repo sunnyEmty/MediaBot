@@ -3,12 +3,12 @@ import asyncio
 
 
 class UserBot:
-    def __init__(self, path):
+    def __init__(self, path, name='UserBot'):
         with open(path) as f:
             self._configs = f.read().splitlines()
             self._api_id = self._configs[1].split(' = ')[1]
             self._api_hash = self._configs[2].split(' = ')[1]
-        self.user_bot = Client('ParserBot', api_id=self._api_id, api_hash=self._api_hash)
+        self.user_bot = Client(name, api_id=self._api_id, api_hash=self._api_hash)
         self._path = path
 
     def save_configs(self):
@@ -23,18 +23,12 @@ class UserBot:
         self._api_hash = new_hash
         self.save_configs()
 
-    async def configure(self, ):
+    async def configure_t(self, ):
 
         pass
 
     async def handler_t(self):
 
         pass
-
-
-    async def run(self):
-        event_loop = asyncio.get_running_loop()
-        event_loop.create_task(self.handler_t())
-
 
 
