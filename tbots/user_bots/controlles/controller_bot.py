@@ -1,13 +1,14 @@
-import telebot
+#import telebot
 import json
 from tbots.make_keyboards import KeyboardBuilder
-
-
+from aiogram import Bot
+from aiogram.dispatcher import Dispatcher
 class ControllerBot:
     token = None
     check_box = None
     bot = None
     path = None
+    dp = None
 
     @staticmethod
     def _init_configs(path):
@@ -16,8 +17,9 @@ class ControllerBot:
             res = json.loads(res)
             ControllerBot.token = res['token']
             ControllerBot.check_box = res['check_box']
-            ControllerBot.bot = telebot.TeleBot(token=ControllerBot.token)
+            ControllerBot.bot = Bot(token=ControllerBot.token)
             ControllerBot.path = path
+        ControllerBot.dp = Dispatcher(ControllerBot.bot)
         ControllerBot.set_start_signals()
 
     @staticmethod
@@ -34,9 +36,9 @@ class ControllerBot:
     @staticmethod
     def set_start_signals():
 
-        @ControllerBot.bot.message_handler(commands=['start'])
-        def get_start_msg(message):
-            ControllerBot.bot.send_message(message.from_user.id,
+        @ControllerBot.dp.message_handler(commands=['start'])
+        async def get_start_msg(message):
+            await ControllerBot.dp.send_message(message.from_user.id,
                                          text='Выбери нужного бота.',
                                          reply_markup=KeyboardBuilder.make_bots_keyboard())
 
