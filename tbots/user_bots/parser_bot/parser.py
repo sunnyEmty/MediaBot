@@ -32,11 +32,10 @@ class Parser(UserBot):
 
     def init_signals(self):
         #filters.chat(self._donners)
-        @self.user_bot.on_message(filters.me)
-        async def get_post(client, message):
+        @self.user_bot.on_message()
+        def get_post(client, message):
             username = message.chat.username
             text = message.text
             print(username, text)
-
 
 
