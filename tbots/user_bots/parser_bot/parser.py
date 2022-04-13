@@ -1,7 +1,4 @@
-from pyrogram import Client, filters
 from tbots.user_bots.user_bot import UserBot
-import threading
-import sqlite3 as sql
 
 
 class Parser(UserBot):
@@ -31,11 +28,11 @@ class Parser(UserBot):
         self.save_configs()
 
     def init_signals(self):
-        #filters.chat(self._donners)
-        @self.user_bot.on_message()
+        @self.client.on_message()
         def get_post(client, message):
             username = message.chat.username
             text = message.text
             print(username, text)
+
 
 
