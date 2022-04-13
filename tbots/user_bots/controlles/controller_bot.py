@@ -2,7 +2,7 @@ import json
 from tbots.make_keyboards import KeyboardBuilder
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
-
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 class ControllerBot:
     token = None
@@ -20,7 +20,7 @@ class ControllerBot:
             ControllerBot.check_box = res['check_box']
             ControllerBot.bot = Bot(token=ControllerBot.token)
             ControllerBot.path = path
-        ControllerBot.dp = Dispatcher(ControllerBot.bot)
+        ControllerBot.dp = Dispatcher(ControllerBot.bot, storage=MemoryStorage())
         ControllerBot.set_start_signals()
 
     @staticmethod
@@ -42,6 +42,7 @@ class ControllerBot:
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Выбери нужного бота.',
                                                  reply_markup=KeyboardBuilder.make_bots_keyboard())
+
 
 
         '''

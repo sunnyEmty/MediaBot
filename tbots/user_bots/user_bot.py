@@ -14,6 +14,11 @@ class UserBot:
         self._path = path
         self.login()
         UserBot.loop.create_task(self.run_user_bot())
+        self.buff = {
+            'api_id': None,
+            'api_hash': None,
+            'donner': None
+        }
 
     def save_configs(self):
         with open(self._path, 'w') as fl:

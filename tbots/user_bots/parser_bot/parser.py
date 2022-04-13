@@ -1,11 +1,11 @@
 from tbots.user_bots.user_bot import UserBot
 
-
 class Parser(UserBot):
     def __init__(self, path):
         super().__init__(path, 'Parser')
         self._donners = eval(self._configs[3].split(' = ')[1])
         self.init_signals()
+
 
     def save_configs(self):
         with open(self._path, 'w') as fl:
@@ -32,7 +32,7 @@ class Parser(UserBot):
         def get_post(client, message):
             username = message.chat.username
             text = message.text
-            print(username, text)
+            #print(username, text)
 
 
 
