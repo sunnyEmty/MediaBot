@@ -41,7 +41,7 @@ class ControllerBot:
         async def get_start_msg(message):
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Выбери нужного бота.',
-                                                 reply_markup=KeyboardBuilder.make_bots_keyboard())
+                                                 reply_markup=KeyboardBuilder.make_bots_kb())
 
 
 
