@@ -1,15 +1,19 @@
-from pyrogram import Client
+from pyrogram import Client, idle
 import asyncio
 
 
 class UserBot:
+    loop = asyncio.get_event_loop()
+
     def __init__(self, path, name='UserBot'):
         with open(path) as f:
             self._configs = f.read().splitlines()
             self._api_id = self._configs[1].split(' = ')[1]
             self._api_hash = self._configs[2].split(' = ')[1]
-        self.user_bot = Client(name, api_id=self._api_id, api_hash=self._api_hash)
+        self.client = Client(name, api_id=self._api_id, api_hash=self._api_hash)
         self._path = path
+        self.login()
+        UserBot.loop.create_task(self.run_user_bot())
 
     def save_configs(self):
         with open(self._path, 'w') as fl:
@@ -23,12 +27,17 @@ class UserBot:
         self._api_hash = new_hash
         self.save_configs()
 
-    async def configure_t(self, ):
+    async def run_user_bot(self):
+        await self.client.start()
+        await idle()
 
-        pass
+    def login(self):
+        self.client.start()
+        self.client.stop()
 
-    async def handler_t(self):
+    def stop_user_bot(self):
+        self.client.stop()
 
-        pass
+
 
 

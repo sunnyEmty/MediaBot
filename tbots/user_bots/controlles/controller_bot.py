@@ -1,8 +1,9 @@
-#import telebot
 import json
 from tbots.make_keyboards import KeyboardBuilder
 from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
+
+
 class ControllerBot:
     token = None
     check_box = None
@@ -38,9 +39,10 @@ class ControllerBot:
 
         @ControllerBot.dp.message_handler(commands=['start'])
         async def get_start_msg(message):
-            await ControllerBot.dp.send_message(message.from_user.id,
-                                         text='Выбери нужного бота.',
-                                         reply_markup=KeyboardBuilder.make_bots_keyboard())
+            await ControllerBot.bot.send_message(message.from_user.id,
+                                                 text='Выбери нужного бота.',
+                                                 reply_markup=KeyboardBuilder.make_bots_keyboard())
+
 
         '''
         @self.bot.callback_query_handler(func=lambda call: call.data == 'change_account')
