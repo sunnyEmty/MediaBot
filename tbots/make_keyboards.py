@@ -4,7 +4,7 @@ from aiogram import types
 class KeyboardBuilder:
 
     @staticmethod
-    def make_bots_keyboard():
+    def make_bots_kb():
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text='Парсер', callback_data='parse'))
         keyboard.add(types.InlineKeyboardButton(text='Постер', callback_data='poster_controller'))
@@ -12,7 +12,7 @@ class KeyboardBuilder:
         return keyboard
 
     @staticmethod
-    def make_parser_keyboard(take_media):
+    def make_parser_kb(take_media):
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text='Cменить аккаунт юзер-бота', callback_data='change_account'))
 
@@ -27,8 +27,16 @@ class KeyboardBuilder:
         return keyboard
 
     @staticmethod
+    def make_sources_kb():
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text='Перезаписать источники', callback_data='rewrite_sources'))
+        keyboard.add(types.InlineKeyboardButton(text='Отчистить источники', callback_data='clear_sources'))
+        keyboard.add(types.InlineKeyboardButton(text='Редактировать источники', callback_data='edit_sources'))
+        return keyboard
+
+    @staticmethod
     def make_back_btn():
-        keyboard = types.ReplyKeyboardMarkup()
-        keyboard.add(types.KeyboardButton(text='/back_'))
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text='Отмена', callback_data='parse'))
         return keyboard
 

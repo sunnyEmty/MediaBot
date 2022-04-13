@@ -17,7 +17,7 @@ class UserBot:
         self.buff = {
             'api_id': None,
             'api_hash': None,
-            'donner': None
+            'donner': []
         }
 
     def save_configs(self):
