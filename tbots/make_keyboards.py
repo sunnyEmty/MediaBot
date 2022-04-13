@@ -26,3 +26,9 @@ class KeyboardBuilder:
 
         return keyboard
 
+    @staticmethod
+    def make_back_btn():
+        keyboard = types.ReplyKeyboardMarkup()
+        keyboard.add(types.KeyboardButton(text='/back_'))
+        return keyboard
+
