@@ -40,8 +40,8 @@ class UserBot:
         self.client.start()
         self.client.stop()
 
-    def stop_user_bot(self):
-        self.client.stop()
+    async def stop_user_bot(self):
+        await self.client.stop()
 
 
 
