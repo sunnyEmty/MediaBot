@@ -93,7 +93,7 @@ class ParserController(ControllerBot):
     def update_sources_handls():
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'rewrite_sources')
         async def rewrite_sources(message):
-            msg = 'Введите ссылки на каналы (каждая ссылка в отельном сообщении). Когда завиршите ввод - нажмите на ' \
+            msg = 'Введите каналы (каждый в отельном сообщении). Когда завиршите ввод - нажмите на ' \
                   'кнопку /endl'
             await ControllerBot.bot.send_message(message.from_user.id, text=msg)
 
@@ -106,21 +106,34 @@ class ParserController(ControllerBot):
             else:
                 ParserController.parser.donners = ParserController.parser.buff['donner'].copy()
                 ParserController.parser.buff['donner'].clear()
-                ParserController.parser.save_configs()
+                try:
+                    ParserController.parser.save_configs()
+                except Exception:
+                    msg = 'Внутренняя ошибка. Повторитие попытку позже'
+                    await ControllerBot.bot.send_message(message.from_user.id, text=msg)
+                await ControllerBot.bot.send_message(message.from_user.id, text='Списки успешно обновлены!!')
                 await ContSt.rewrite_sources.set()
                 return
-            #await message.rep('|----------------------------------|')
+
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'clear_sources')
-        def clear_sources(message):
+        async def clear_sources(message):
+            await ParserController.parser.stop_user_bot()
             ParserController.parser.donners.clear()
+            ParserController.parser.save_configs()
+            await ControllerBot.bot.send_message(message.from_user.id, text='Удаление прошло успешно')
+
+        @ControllerBot.dp.message_handler(commands=['list'])
+        async def update_api_id(message):
+            msg = 'Cписок источниоков:\n' + '\n'.join(ParserController.parser.donners)
+            await ControllerBot.bot.send_message(message.from_user.id, text=msg)
+
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'edit_sources')
         async def edit_sources(message):
-            msg = 'Введите ссылки на каналы (каждая ссылка в отельном сообщении). Когда завиршите ввод - нажмите на ' \
-                  'кнопку /endl'
+
+            msg = 'Для вывода списка источников введите /list'
             await ControllerBot.bot.send_message(message.from_user.id, text=msg)
-            await ContSt.input_sources.set()
 
 
 
