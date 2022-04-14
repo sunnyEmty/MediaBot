@@ -18,6 +18,10 @@ class ContSt(StatesGroup):
     input_sources = State()
     clear_sources = State()
 
+    remove_sources = State()
+
+    append_sources = State()
+
 
 class ParserController(ControllerBot):
     state = None
@@ -93,7 +97,7 @@ class ParserController(ControllerBot):
     def update_sources_handls():
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'rewrite_sources')
         async def rewrite_sources(message):
-            msg = 'Введите каналы (каждый в отельном сообщении). Когда завиршите ввод - нажмите на ' \
+            msg = 'Введите каналы (каждый в отдельном сообщении). Когда завиршите ввод - нажмите на ' \
                   'кнопку /endl'
             await ControllerBot.bot.send_message(message.from_user.id, text=msg)
 
@@ -111,7 +115,7 @@ class ParserController(ControllerBot):
                 except Exception:
                     msg = 'Внутренняя ошибка. Повторитие попытку позже'
                     await ControllerBot.bot.send_message(message.from_user.id, text=msg)
-                await ControllerBot.bot.send_message(message.from_user.id, text='Списки успешно обновлены!!')
+                await ControllerBot.bot.send_message(message.from_user.id, text='Список успешно обновлен!!')
                 await ContSt.rewrite_sources.set()
                 return
 
@@ -132,11 +136,52 @@ class ParserController(ControllerBot):
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'edit_sources')
         async def edit_sources(message):
 
-            msg = 'Для вывода списка источников введите /list'
+            msg = 'Для вывода списка источников введите /list\n Компнда /app добавляет новые источники. \nКоманда /del ' \
+                  'выполняет удаление источников по списку их имен'
             await ControllerBot.bot.send_message(message.from_user.id, text=msg)
 
+        @ControllerBot.dp.message_handler(commands=['del'])
+        async def remove_sources(message):
+            msg = 'Введите каналы (каждый в отдельном сообщении). Когда завиршите ввод - нажмите на ' \
+                  'кнопку /endl'
+            await ControllerBot.bot.send_message(message.from_user.id, text=msg)
+            await ContSt.remove_sources.set()
 
+        @ControllerBot.dp.message_handler(state=ContSt.remove_sources)
+        async def remove_cycle(message):
+            if message.text != '/endl' and message.text in ParserController.parser.donners:
+                ParserController.parser.donners.remove(message.text)
+            else:
+                if message.text == '/endl':
+                    try:
+                        ParserController.parser.save_configs()
+                    except Exception:
+                        msg = 'Внутренняя ошибка. Повторитие попытку позже'
+                        await ControllerBot.bot.send_message(message.from_user.id, text=msg)
+                    await ControllerBot.bot.send_message(message.from_user.id, text='Списки успешно обновлены!!')
+                return
 
+        @ControllerBot.dp.message_handler(commands=['app'])
+        async def append_sources(message):
+            msg = 'Введите каналы (каждый в отдельном сообщении). Когда завиршите ввод - нажмите на ' \
+                  'кнопку /endl'
+            await ControllerBot.bot.send_message(message.from_user.id, text=msg)
+            await ContSt.append_sources.set()
+
+        @ControllerBot.dp.message_handler(state=ContSt.append_sources)
+        async def app_cycle(message):
+            if message.text != '/endl':
+                ParserController.parser.buff['donner'].append(message.text)
+            else:
+                ParserController.parser.donners += ParserController.parser.buff['donner']
+                ParserController.parser.buff['donner'].clear()
+                try:
+                    ParserController.parser.save_configs()
+                except Exception:
+                    msg = 'Внутренняя ошибка. Повторитие попытку позже'
+                    await ControllerBot.bot.send_message(message.from_user.id, text=msg)
+                await ControllerBot.bot.send_message(message.from_user.id, text='Список успешно обновлен!!')
+                return
 
     @staticmethod
     def run():
