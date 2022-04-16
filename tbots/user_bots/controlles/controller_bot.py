@@ -7,6 +7,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 class ControllerBot:
     token = None
     check_box = None
+    power_on = None
     bot = None
     path = None
     dp = None
@@ -42,6 +43,8 @@ class ControllerBot:
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Выбери нужного бота.',
                                                  reply_markup=KeyboardBuilder.make_bots_kb())
+
+
 
 
 

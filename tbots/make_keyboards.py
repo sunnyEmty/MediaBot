@@ -12,13 +12,17 @@ class KeyboardBuilder:
         return keyboard
 
     @staticmethod
-    def make_parser_kb(take_media):
+    def make_parser_kb(take_media, power_on):
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text='Cменить аккаунт юзер-бота', callback_data='change_account'))
 
         text = 'Забирать медиафайл из сообщения' if not take_media else 'Не забирать медиафайл из сообщения'
 
         keyboard.add(types.InlineKeyboardButton(text=text, callback_data='update_checkbox'))
+
+        text = 'Включить бота' if not power_on else 'Выключить бота'
+        keyboard.add(types.InlineKeyboardButton(text=text, callback_data='enable_disable'))
+
         keyboard.add(types.InlineKeyboardButton(text='Работа с источниками', callback_data='update_sources'))
         keyboard.add(types.InlineKeyboardButton(text='Работа с фильтрами', callback_data='update_filters'))
         keyboard.add(types.InlineKeyboardButton(text='Работа со стоплистом', callback_data='update_stoplist'))

@@ -3,6 +3,8 @@ from tbots.user_bots.controlles.controller_bot import ControllerBot
 from aiogram import executor
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher.filters import StateFilter
+from psycopg2 import Error
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 
 class ContSt(StatesGroup):
@@ -38,12 +40,34 @@ class ParserController(ControllerBot):
 
     @staticmethod
     def set_signals():
+        @ControllerBot.dp.message_handler(commands=['showp'])
+        async def show_parsing(message):
+            while True:
+                if ParserController.parser.buff_changed:
+                    ParserController.parser.buff_changed = False
+                    await ControllerBot.bot.send_message(message.from_user.id, text=ParserController.parser.buff)
+
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'parse')
         async def parse(message):
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Что вам нужно?',
-                                                 reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box))
+                                                 reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box,
+                                                                                             ParserController.parser.power_on))
+
+        @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'enable_disable')
+        async def enable_disable(message):
+            if ParserController.parser.power_on:
+                await ParserController.parser.stop_user_bot()
+                ParserController.parser.power_on = False
+            else:
+                ParserController.parser.start_user_bot()
+                ParserController.parser.power_on = True
+
+            await ControllerBot.bot.send_message(message.from_user.id,
+                                                 text='Что вам нужно?',
+                                                 reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box,
+                                                                                             ControllerBot.power_on))
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'change_account')
         async def change_account(message):
@@ -57,7 +81,8 @@ class ParserController(ControllerBot):
             ControllerBot.save_configs()
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Что вам нужно?',
-                                                 reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box))
+                                                 reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box,
+                                                                                             ControllerBot.power_on))
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'update_sources')
         async def update_sources(message):
@@ -182,6 +207,7 @@ class ParserController(ControllerBot):
                     await ControllerBot.bot.send_message(message.from_user.id, text=msg)
                 await ControllerBot.bot.send_message(message.from_user.id, text='Список успешно обновлен!!')
                 return
+
 
     @staticmethod
     def run():

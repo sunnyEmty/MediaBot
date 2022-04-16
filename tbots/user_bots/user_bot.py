@@ -12,6 +12,7 @@ class UserBot:
             self._api_hash = self._configs[2].split(' = ')[1]
         self.client = Client(name, api_id=self._api_id, api_hash=self._api_hash)
         self._path = path
+        self.power_on = True
         self.login()
         UserBot.loop.create_task(self.run_user_bot())
         self.buff = {
@@ -32,16 +33,19 @@ class UserBot:
         self._api_hash = new_hash
         self.save_configs()
 
-    async def run_user_bot(self):
-        await self.client.start()
-        await idle()
+    def run_user_bot(self):
+        self.client.start()
 
     def login(self):
         self.client.start()
         self.client.stop()
 
-    async def stop_user_bot(self):
-        await self.client.stop()
+    def stop_user_bot(self):
+        self.client.stop()
+
+    def start_user_bot(self):
+        UserBot.loop.create_task(self.run_user_bot())
+
 
 
 
