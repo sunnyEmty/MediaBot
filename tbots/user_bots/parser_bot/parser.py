@@ -7,6 +7,7 @@ class Parser(UserBot):
         self.donners = eval(self._configs[3].split(' = ')[1])
         self.buff_changed_ = False
         self.buff['donner'] = []
+        self.handelr
         self.init_signals()
 
 
@@ -31,6 +32,7 @@ class Parser(UserBot):
         self.save_configs()
 
     def init_signals(self):
+
         @self.client.on_message(filters=filters.chat(self.donners))
         def get_post(client, message):
             if not self.power_on:
