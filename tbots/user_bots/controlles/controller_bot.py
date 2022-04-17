@@ -7,7 +7,6 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 class ControllerBot:
     token = None
     check_box = None
-    power_on = None
     bot = None
     path = None
     dp = None

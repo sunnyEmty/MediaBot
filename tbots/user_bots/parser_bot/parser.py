@@ -1,17 +1,12 @@
-import asyncio
-
+from pyrogram import filters
 from tbots.user_bots.user_bot import UserBot
-
-import psycopg2
-from psycopg2 import Error
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-
 
 class Parser(UserBot):
     def __init__(self, path):
         super().__init__(path, 'Parser')
         self.donners = eval(self._configs[3].split(' = ')[1])
         self.buff_changed_ = False
+        self.buff['donner'] = []
         self.init_signals()
 
 
@@ -36,8 +31,8 @@ class Parser(UserBot):
         self.save_configs()
 
     def init_signals(self):
-        @self.client.on_message()
-        async def get_post(client, message):
+        @self.client.on_message(filters=filters.chat(self.donners))
+        def get_post(client, message):
             if not self.power_on:
                 return
 
@@ -45,22 +40,16 @@ class Parser(UserBot):
             text = message.text
             print(message.text, message.chat)
             self.buff_changed_ = True
+            put_message = 'INSERT INTO Messages (MESSAGE, LOGIN) values (\'' \
+                    + str(message.text) + '\' , ' + '\'' \
+                    + str(message.chat.username) + '\');'
 
-            connection = psycopg2.connect(user="postgres",
-                                          password="123",
-                                          host="127.0.0.1",
-                                          port="5432")
+            put_user = 'INSERT INTO Users (LOGIN) values (\'' + str(message.chat.username) + '\');'
+            if self.db_request(put_user) and self.db_request(put_message):
+                pass
+            else:
+                print("Ошбика связи с базой данных")
 
-            cursor = connection.cursor()
-            query = 'INSERT INTO Messages (MESSAGE, LOGIN) values (\'' + str(message.text) + '\' , ' + '\'' + str(message.chat.username) + '\');'
-            cursor.execute(query)
-            connection.commit()
-
-            query = 'INSERT INTO Users (LOGIN) values (\'' + str(message.chat.username) + '\');'
-            cursor.execute(query)
-            connection.commit()
-            connection.close()
-
-            await self.client.send_message(chat_id=981873870, text=message.text)
+            #await self.client.send_message(chat_id=981873870, text=message.text)
 
 #5056351011

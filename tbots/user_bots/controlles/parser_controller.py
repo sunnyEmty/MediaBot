@@ -55,19 +55,20 @@ class ParserController(ControllerBot):
                                                  reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box,
                                                                                              ParserController.parser.power_on))
 
+# !!!!!!
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'enable_disable')
         async def enable_disable(message):
             if ParserController.parser.power_on:
-                await ParserController.parser.stop_user_bot()
+                await ParserController.parser.pause_user_bot()
                 ParserController.parser.power_on = False
             else:
-                ParserController.parser.start_user_bot()
+                ParserController.parser.run_user_bot()
                 ParserController.parser.power_on = True
 
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Что вам нужно?',
                                                  reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box,
-                                                                                             ControllerBot.power_on))
+                                                                                             ParserController.parser.power_on))
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'change_account')
         async def change_account(message):
@@ -211,4 +212,4 @@ class ParserController(ControllerBot):
 
     @staticmethod
     def run():
-        executor.start_polling(ControllerBot.dp, skip_updates=True, loop=ParserController.parser.loop)
+        executor.start_polling(ControllerBot.dp, skip_updates=True, loop=ParserController.parser.loop, )
