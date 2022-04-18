@@ -6,7 +6,6 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 class ControllerBot:
     token = None
-    check_box = None
     bot = None
     path = None
     dp = None
@@ -17,7 +16,6 @@ class ControllerBot:
             res = json.load(f)
             res = json.loads(res)
             ControllerBot.token = res['token']
-            ControllerBot.check_box = res['check_box']
             ControllerBot.bot = Bot(token=ControllerBot.token)
             ControllerBot.path = path
         ControllerBot.dp = Dispatcher(ControllerBot.bot, storage=MemoryStorage())
@@ -28,7 +26,6 @@ class ControllerBot:
         json_str = json.dumps(
             {
                 'token': ControllerBot.token,
-                'check_box': ControllerBot.check_box,
             }
         )
         with open(ControllerBot.path, 'w', encoding='utf-8') as f:

@@ -22,14 +22,15 @@ class UserBot:
             'api_hash': None,
         }
 
+    def _make_configs(self):
+        return '\n'.join(['[pyrogram]',
+                          'api_id = ' + str(self._api_id),
+                          'api_hash = ' + self._api_hash])
 
-    def save_configs(self):
+    async def save_configs(self):
         with open(self._path, 'w') as fl:
-            to_save = '\n'.join(['[pyrogram]',
-                                 'api_id = ' + str(self._api_id),
-                                 'api_hash = ' + self._api_hash])
-            fl.write(to_save)
-            self.client.restart()
+            fl.write(self._make_configs())
+            await self.client.restart()
 
     def init_signals(self):
         pass
