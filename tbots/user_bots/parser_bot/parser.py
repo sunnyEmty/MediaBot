@@ -18,7 +18,10 @@ class Parser(UserBot):
         return '\n'.join(['[pyrogram]',
                           'api_id = ' + str(self._api_id),
                           'api_hash = ' + self._api_hash,
-                          'donner = ' + str(self.donners)])
+                          'donner = ' + str(self.donners),
+                          'get_media = ' + str(self.get_media),
+                          'media_path = ' + str(self.media_path),
+                          'pic_format = ' + str(self.pic_format)])
 
 
 

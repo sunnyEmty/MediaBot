@@ -2,9 +2,6 @@ from tbots.make_keyboards import KeyboardBuilder
 from tbots.user_bots.controlles.controller_bot import ControllerBot
 from aiogram import executor
 from aiogram.dispatcher.filters.state import StatesGroup, State
-from aiogram.dispatcher.filters import StateFilter
-from psycopg2 import Error
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 
 class ContSt(StatesGroup):
@@ -52,10 +49,11 @@ class ParserController(ControllerBot):
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'parse')
         async def parse(message):
+            get_media = ParserController.parser.get_media
+            power_on = ParserController.parser.power_on
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Что вам нужно?',
-                                                 reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box,
-                                                                                             ParserController.parser.power_on))
+                                                 reply_markup=KeyboardBuilder.make_parser_kb(get_media, power_on))
 
 # !!!!!!
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'enable_disable')
@@ -66,11 +64,13 @@ class ParserController(ControllerBot):
             else:
                 ParserController.parser.run_user_bot()
                 ParserController.parser.power_on = True
+            get_media = ParserController.parser.get_media
+            power_on = ParserController.parser.power_on
 
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Что вам нужно?',
-                                                 reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box,
-                                                                                             ParserController.parser.power_on))
+                                                 reply_markup=KeyboardBuilder.make_parser_kb(get_media,
+                                                                                             power_on))
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'change_account')
         async def change_account(message):
@@ -80,12 +80,14 @@ class ParserController(ControllerBot):
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'update_checkbox')
         async def update_checkbox(message):
-            ControllerBot.check_box = not ControllerBot.check_box
+            ParserController.parser.get_media = not ParserController.parser.get_media
             ControllerBot.save_configs()
+            get_media = ParserController.parser.get_media
+            power_on = ParserController.parser.power_on
             await ControllerBot.bot.send_message(message.from_user.id,
                                                  text='Что вам нужно?',
-                                                 reply_markup=KeyboardBuilder.make_parser_kb(ControllerBot.check_box,
-                                                                                             ControllerBot.power_on))
+                                                 reply_markup=KeyboardBuilder.make_parser_kb(get_media,
+                                                                                             power_on))
 
         @ControllerBot.dp.callback_query_handler(lambda call: call.data == 'update_sources')
         async def update_sources(message):

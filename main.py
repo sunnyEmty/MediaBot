@@ -1,6 +1,5 @@
 from tbots.user_bots.controlles.parser_controller import ParserController
 from tbots.user_bots.parser_bot.parser import Parser
-from aiogram import executor
 
 if __name__ == '__main__':
 

@@ -1,7 +1,6 @@
 from pyrogram import Client, idle
 import asyncio
 from psycopg2 import Error
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import psycopg2
 
 class UserBot:
