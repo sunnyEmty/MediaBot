@@ -7,6 +7,9 @@ class Parser(UserBot):
         super().__init__(path, 'Parser')
         self.donners = eval(self._configs[3].split(' = ')[1])
         self.get_media = eval(self._configs[4].split(' = ')[1])
+        self.media_path = self._configs[5].split(' = ')[1]
+        self.pic_format = self._configs[6].split(' = ')
+        self.pic_format = '.' + self.pic_format[1] if len(self.pic_format) > 1 else ''
         self.buff_changed_ = False
         self.buff['donner'] = []
         self.init_signals()
@@ -34,10 +37,16 @@ class Parser(UserBot):
             self.donners.remove(donner_name)
         self.save_configs()
 
-    def get_media_path(self, media):
-        if not self.get_media or media is None:
+    def get_media_path(self, message):
+        if not self.get_media or message.media != 'photo':
             return 'NaN'
-        count = os.listdir(path= 'media')
+        count = len(os.listdir(path=self.media_path))
+        file_name = self.media_path + '/' + str(count) + self.pic_format
+        try:
+            self.client.download_media(file_name=file_name, message=message, block=False)
+        except Exception:
+            print('Ошибка загрузки файла:', file_name)
+        return file_name
 
 
 
@@ -53,14 +62,13 @@ class Parser(UserBot):
             if not self.power_on:
                 return
 
-            print(message.text, message.chat)
             self.buff_changed_ = True
-
-            inp = (str(message.text), str(message.chat.username)) + self.get_media_path(message.media)
-
+            text = message.caption if message.caption else message.text
+            inp = (str(text), '@' + str(message.chat.username), self.get_media_path(message))
             put_message = 'INSERT INTO Messages (MESSAGE, LOGIN, MEDIA) values ' + str(inp)
-            print(put_message)
-            put_user = 'INSERT INTO Users (LOGIN) values (\'' + str(message.chat.username) + '\');'
+
+
+            put_user = 'INSERT INTO Users (LOGIN) values (\'' + '@' + str(message.chat.username) + '\');'
             if self.db_request(put_user) and self.db_request(put_message):
                 pass
             else:
