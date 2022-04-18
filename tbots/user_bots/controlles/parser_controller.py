@@ -1,7 +1,7 @@
 from tbots.make_keyboards import KeyboardBuilder
 from tbots.user_bots.controlles.controller_bot import ControllerBot
 from aiogram import executor
-from aiogram.dispatcher.filters.state import StatesGroup, State
+from aiogram.dispatcher.filters.state import StatesGroup, State,
 
 
 class ContSt(StatesGroup):
