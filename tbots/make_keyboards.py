@@ -27,7 +27,7 @@ class KeyboardBuilder:
         keyboard.add(types.InlineKeyboardButton(text='Работа с фильтрами', callback_data='update_filters'))
         keyboard.add(types.InlineKeyboardButton(text='Работа со стоплистом', callback_data='update_stoplist'))
         keyboard.add(types.InlineKeyboardButton(text='Сообщения администрации', callback_data='update_admin_msg'))
-
+        keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='back_to_main'))
         return keyboard
 
     @staticmethod
@@ -43,4 +43,14 @@ class KeyboardBuilder:
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text='Отмена', callback_data='parse'))
         return keyboard
+
+    @staticmethod
+    def make_filters_kb():
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text='Удалить все фильтры', callback_data='clear_filters'))
+        keyboard.add(types.InlineKeyboardButton(text='Редактировать фильтры', callback_data='edit_filters'))
+        keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='update_filters'))
+        return keyboard
+
+
 

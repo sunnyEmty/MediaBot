@@ -11,6 +11,7 @@ class UserBot:
             self._configs = f.read().splitlines()
             self._api_id = self._configs[1].split(' = ')[1]
             self._api_hash = self._configs[2].split(' = ')[1]
+            self.power_on = self._configs[3].split(' = ')[1]
         self.client = Client(name, api_id=self._api_id, api_hash=self._api_hash)
         self._path = path
         self.power_on = True
@@ -24,7 +25,8 @@ class UserBot:
     def _make_configs(self):
         return '\n'.join(['[pyrogram]',
                           'api_id = ' + str(self._api_id),
-                          'api_hash = ' + self._api_hash])
+                          'api_hash = ' + self._api_hash,
+                          'power_on = ' + str(self.power_on)])
 
     async def save_configs(self):
         with open(self._path, 'w') as fl:

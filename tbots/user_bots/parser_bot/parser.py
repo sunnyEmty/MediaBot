@@ -1,15 +1,18 @@
 from pyrogram import filters
 from tbots.user_bots.user_bot import UserBot
+import re
 import os
 
 class Parser(UserBot):
     def __init__(self, path):
         super().__init__(path, 'Parser')
-        self.donners = eval(self._configs[3].split(' = ')[1])
-        self.get_media = eval(self._configs[4].split(' = ')[1])
-        self.media_path = self._configs[5].split(' = ')[1]
-        self.pic_format = self._configs[6].split(' = ')
+        self.donners = eval(self._configs[4].split(' = ')[1])
+        self.get_media = eval(self._configs[5].split(' = ')[1])
+        self.media_path = self._configs[6].split(' = ')[1]
+        self.pic_format = self._configs[7].split(' = ')
         self.pic_format = '.' + self.pic_format[1] if len(self.pic_format) > 1 else ''
+        self.regular = self._configs[8].split(' = ')[1]
+
         self.buff_changed_ = False
         self.buff['donner'] = []
         self.init_signals()
@@ -18,11 +21,16 @@ class Parser(UserBot):
         return '\n'.join(['[pyrogram]',
                           'api_id = ' + str(self._api_id),
                           'api_hash = ' + self._api_hash,
+                          'power_on = ' + str(self.power_on),
                           'donner = ' + str(self.donners),
                           'get_media = ' + str(self.get_media),
                           'media_path = ' + str(self.media_path),
-                          'pic_format = ' + str(self.pic_format)])
+                          'pic_format = ' + str(self.pic_format),
+                          'regular = ' + self.regular])
 
+
+    def set_keywords(self, keywords, complete_match=None):
+        pass
 
 
 
@@ -51,17 +59,11 @@ class Parser(UserBot):
             print('Ошибка загрузки файла:', file_name)
         return file_name
 
-
-
-
-
-
-
-
     def init_signals(self):
 
         @self.client.on_message(filters.chat(self.donners))
         def get_post(client, message):
+            print(message.text)
             if not self.power_on:
                 return
 

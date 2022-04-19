@@ -4,7 +4,7 @@ from aiogram import Bot
 from aiogram.dispatcher import Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-class ControllerBot:
+class InterfaceBot:
     token = None
     bot = None
     path = None
@@ -15,36 +15,39 @@ class ControllerBot:
         with open(path, 'r', encoding='utf-8') as f:
             res = json.load(f)
             res = json.loads(res)
-            ControllerBot.token = res['token']
-            ControllerBot.bot = Bot(token=ControllerBot.token)
-            ControllerBot.path = path
-        ControllerBot.dp = Dispatcher(ControllerBot.bot, storage=MemoryStorage())
-        ControllerBot.set_start_signals()
+            InterfaceBot.token = res['token']
+            InterfaceBot.bot = Bot(token=InterfaceBot.token)
+            InterfaceBot.path = path
+        InterfaceBot.dp = Dispatcher(InterfaceBot.bot, storage=MemoryStorage())
+        InterfaceBot.set_start_signals()
 
     @staticmethod
     def save_configs():
         json_str = json.dumps(
             {
-                'token': ControllerBot.token,
+                'token': InterfaceBot.token,
             }
         )
-        with open(ControllerBot.path, 'w', encoding='utf-8') as f:
+        with open(InterfaceBot.path, 'w', encoding='utf-8') as f:
             json.dump(json_str, f)
 
     @staticmethod
     def set_start_signals():
 
-        @ControllerBot.dp.message_handler(commands=['start'])
+        @InterfaceBot.dp.message_handler(commands=['start'])
         async def get_start_msg(message):
-            await ControllerBot.bot.send_message(message.from_user.id,
-                                                 text='Выбери нужного бота.',
-                                                 reply_markup=KeyboardBuilder.make_bots_kb())
+            await InterfaceBot.bot.send_message(message.from_user.id,
+                                                text='Выбери нужного бота.',
+                                                reply_markup=KeyboardBuilder.make_bots_kb())
+
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'back_to_main')
+        async def back_to_main(message):
+            await InterfaceBot.bot.send_message(message.from_user.id,
+                                                text='Выбери нужного бота.',
+                                                reply_markup=KeyboardBuilder.make_bots_kb())
 
 
-
-
-
-        '''
+    '''
         @self.bot.callback_query_handler(func=lambda call: call.data == 'change_account')
         def change_account(message):
             msg = self.bot.send_message(message.from_user.id,
