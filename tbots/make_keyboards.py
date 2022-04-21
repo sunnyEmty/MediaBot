@@ -52,5 +52,22 @@ class KeyboardBuilder:
         keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='update_filters'))
         return keyboard
 
+    @staticmethod
+    def make_edit_filters_kb():
+        keyboard = types.InlineKeyboardMarkup()
+        adds = ' (в виде регулярного выражения)'
+        keyboard.add(types.InlineKeyboardButton(text='Вывод фильтров'+adds, callback_data='print_filters'))
+        keyboard.add(types.InlineKeyboardButton(text='Добавить фильтры', callback_data='append_filters'))
+        keyboard.add(types.InlineKeyboardButton(text='Выборочно удалить фильтры', callback_data='delete_filters'))
+        return keyboard
+
+    @staticmethod
+    def make_append_filters():
+        keyboard = types.ReplyKeyboardMarkup()
+        keyboard.add(types.KeyboardButton(text='/save'))
+        keyboard.add(types.KeyboardButton(text='/cancel'))
+        return keyboard
+
+
 
 

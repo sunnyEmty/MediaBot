@@ -1,4 +1,4 @@
-from pyrogram import filters
+from pyrogram import filters, Client
 from tbots.user_bots.user_bot import UserBot
 import re
 import os
@@ -25,8 +25,17 @@ class Parser(UserBot):
                           'donner = ' + str(self.donners),
                           'get_media = ' + str(self.get_media),
                           'media_path = ' + str(self.media_path),
-                          'pic_format = ' + str(self.pic_format),
+                          'pic_format = ' + str(self.pic_format)[1:],
                           'regular = ' + self.regular])
+
+    async def save_configs(self):
+        with open(self._path, 'w') as fl:
+            fl.write(self._make_configs())
+        await self.client.stop()
+        self.client = Client(self.name, api_id=self._api_id, api_hash=self._api_hash)
+        self.run_user_bot()
+        self.init_signals()
+
 
 
     def set_keywords(self, keywords, complete_match=None):
@@ -61,7 +70,7 @@ class Parser(UserBot):
 
     def init_signals(self):
 
-        @self.client.on_message(filters.chat(self.donners))
+        @self.client.on_message(filters.chat(self.donners) & filters.regex(self.regular))
         def get_post(client, message):
             print(message.text)
             if not self.power_on:

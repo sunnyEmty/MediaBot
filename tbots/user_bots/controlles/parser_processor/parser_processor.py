@@ -64,8 +64,8 @@ class ParserProcessor(InterfaceBot):
 
             await InterfaceBot.bot.send_message(message.from_user.id,
                                                 text='Что вам нужно?',
-                                                reply_markup=KeyboardBuilder.make_parser_kb(get_media,
-                                                                                             power_on))
+                                                reply_markup=KeyboardBuilder.make_parser_kb(ParserProcessor.parser.get_media,
+                                                                                             ParserProcessor.parser.power_on))
 
         @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'change_account')
         async def change_account(message):

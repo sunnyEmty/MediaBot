@@ -16,6 +16,7 @@ class UserBot:
         self._path = path
         self.power_on = True
         self.login()
+        self.name = name
         self.run_user_bot()
         self.buff = {
             'api_id': None,
@@ -31,7 +32,10 @@ class UserBot:
     async def save_configs(self):
         with open(self._path, 'w') as fl:
             fl.write(self._make_configs())
-            await self.client.restart()
+            await self.client.stop()
+            self.client = Client(self.name, api_id=self._api_id, api_hash=self._api_hash)
+            self.login()
+            self.run_user_bot()
 
     def init_signals(self):
         pass
