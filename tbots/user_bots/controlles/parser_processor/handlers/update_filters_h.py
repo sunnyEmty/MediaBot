@@ -20,6 +20,14 @@ class UpdateFiltersH:
 
     @staticmethod
     def update_filters_handls():
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'print_filters')
+        async def print_filters(message):
+            filts = 'Исползуемые фильтры (записаны в виде регулярного выражения)\n' + ParserProcessor.parser.regular
+            await InterfaceBot.bot.send_message(message.from_user.id, text=filts)
+            await InterfaceBot.bot.send_message(message.from_user.id,
+                                                text='Что вам нужно?',
+                                                reply_markup=KeyboardBuilder.make_filters_kb())
+
         @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'clear_filters')
         async def clear_filters(message):
             ParserProcessor.parser.regular = '.*'
@@ -37,13 +45,7 @@ class UpdateFiltersH:
                                                 text='Что вам нужно?',
                                                 reply_markup=KeyboardBuilder.make_edit_filters_kb())
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'print_filters', state=FilterState.edit_filters)
-        async def print_filters(message):
-            filts = 'Исползуемые фильтры (записаны в виде регулярного выражения)\n' + ParserProcessor.parser.regular
-            await InterfaceBot.bot.send_message(message.from_user.id, text=filts)
-            await InterfaceBot.bot.send_message(message.from_user.id,
-                                                text='Что вам нужно?',
-                                                reply_markup=KeyboardBuilder.make_edit_filters_kb())
+
 
         @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'append_filters', state=FilterState.edit_filters)
         async def append_filters(message):
@@ -76,7 +78,7 @@ class UpdateFiltersH:
 
         @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'delete_filters')
         async def delete_filters(message):
-
+            pass
 
     @staticmethod
     async def save(message):
