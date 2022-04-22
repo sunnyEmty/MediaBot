@@ -19,8 +19,8 @@ class Parser(UserBot):
 
     def _make_configs(self):
         return '\n'.join(['[pyrogram]',
-                          'api_id = ' + str(self._api_id),
-                          'api_hash = ' + self._api_hash,
+                          'api_id = ' + str(self.api_id),
+                          'api_hash = ' + self.api_hash,
                           'power_on = ' + str(self.power_on),
                           'donner = ' + str(self.donners),
                           'get_media = ' + str(self.get_media),
@@ -32,9 +32,47 @@ class Parser(UserBot):
         with open(self._path, 'w') as fl:
             fl.write(self._make_configs())
         await self.client.stop()
-        self.client = Client(self.name, api_id=self._api_id, api_hash=self._api_hash)
+        self.client = Client(self.name, api_id=self.api_id, api_hash=self.api_hash)
         self.run_user_bot()
         self.init_signals()
+
+    def clear_filters(self):
+        self.regular = '.*'
+
+    def get_filters(self):
+        return set(tuple(self.regular.split('|')))
+
+    def set_reg_from_filters(self, filters_):
+        s = set(tuple(filters_))
+        self.regular = '|'.join(s)
+
+    def add_filters(self, filters):
+        if self.regular == '.*':
+            self.regular = '|'.join(set(filters))
+            return
+
+        last_filt = self.regular.split('|')
+        last_filt += filters
+        last_filt = tuple(last_filt)
+        self.regular = '|'.join(set(last_filt))
+
+    def erase_filters(self, filts):
+        last_filts = set(self.regular.split('|'))
+        for filt in filts:
+            if filt in last_filts:
+                last_filts.remove(filt)
+
+        if last_filts == {}:
+            self.regular = '.*'
+        else:
+            self.regular = '|'.join(last_filts)
+
+
+
+
+
+
+
 
 
 

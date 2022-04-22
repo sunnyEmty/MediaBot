@@ -12,6 +12,7 @@ class ContSt(StatesGroup):
     update_checkbox = State()
 
     update_sources = State()
+    edit_sources = State()
     rewrite_sources = State()
     input_sources = State()
     clear_sources = State()
@@ -37,7 +38,7 @@ class ParserProcessor(InterfaceBot):
 
     @staticmethod
     def set_signals():
-        @InterfaceBot.dp.message_handler(commands=['showp'])
+        @InterfaceBot.dp.message_handler(commands=['showp'], state='*')
         async def show_parsing(message):
             while True:
                 if ParserProcessor.parser.buff_changed:
@@ -45,7 +46,7 @@ class ParserProcessor(InterfaceBot):
                     await InterfaceBot.bot.send_message(message.from_user.id, text=ParserProcessor.parser.buff)
 
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'parse')
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'parse', state='*')
         async def parse(message):
             get_media = ParserProcessor.parser.get_media
             power_on = ParserProcessor.parser.power_on
@@ -54,7 +55,7 @@ class ParserProcessor(InterfaceBot):
                                                 reply_markup=KeyboardBuilder.make_parser_kb(get_media, power_on))
 
 # !!!!!!
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'enable_disable')
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'enable_disable', state='*')
         async def enable_disable(message):
             ParserProcessor.parser.power_on = not ParserProcessor.parser.power_on
             if not ParserProcessor.parser.power_on:
@@ -67,14 +68,20 @@ class ParserProcessor(InterfaceBot):
                                                 reply_markup=KeyboardBuilder.make_parser_kb(ParserProcessor.parser.get_media,
                                                                                              ParserProcessor.parser.power_on))
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'change_account')
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'change_account', state='*')
         async def change_account(message):
             await ContSt.change_account.set()
+            print(ParserProcessor.parser.buff)
+            ParserProcessor.parser.drop_buf()
+            print(ParserProcessor.parser.buff)
+            text = 'Введите id пользователя.\nЕсли ошиблись Нажмите на \"Отмена\"'
 
-            await InterfaceBot.bot.send_message(message.from_user.id, text='Введите id пользователя')
-            await ContSt.update_api_id()
+            await InterfaceBot.bot.send_message(message.from_user.id, text=text,
+                                                reply_markup=KeyboardBuilder.make_cancel_btn('parse'))
+            await ContSt.update_api_id.set()
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'update_checkbox')
+
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'update_checkbox', state='*')
         async def update_checkbox(message):
             ParserProcessor.parser.get_media = not ParserProcessor.parser.get_media
             InterfaceBot.save_configs()
@@ -83,15 +90,16 @@ class ParserProcessor(InterfaceBot):
             await InterfaceBot.bot.send_message(message.from_user.id,
                                                 text='Что вам нужно?',
                                                 reply_markup=KeyboardBuilder.make_parser_kb(get_media,
-                                                                                             power_on))
+                                                                                            power_on))
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'update_sources')
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'update_sources', state='*')
         async def update_sources(message):
+
             await InterfaceBot.bot.send_message(message.from_user.id,
                                                 text='Что делать с источниками?',
                                                 reply_markup=KeyboardBuilder.make_sources_kb())
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'update_filters')
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'update_filters', state='*')
         async def update_filters(message):
             await InterfaceBot.bot.send_message(message.from_user.id,
                                                 text='Что делать с фильтрами?',

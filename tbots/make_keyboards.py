@@ -36,22 +36,23 @@ class KeyboardBuilder:
         keyboard.add(types.InlineKeyboardButton(text='Перезаписать источники', callback_data='rewrite_sources'))
         keyboard.add(types.InlineKeyboardButton(text='Отчистить источники', callback_data='clear_sources'))
         keyboard.add(types.InlineKeyboardButton(text='Редактировать источники', callback_data='edit_sources'))
+        keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='parse'))
         return keyboard
 
     @staticmethod
-    def make_back_btn():
+    def make_cancel_btn(callback_data):
         keyboard = types.InlineKeyboardMarkup()
-        keyboard.add(types.InlineKeyboardButton(text='Отмена', callback_data='parse'))
+        keyboard.add(types.InlineKeyboardButton(text='Отмена', callback_data=callback_data))
         return keyboard
 
     @staticmethod
     def make_filters_kb():
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text='Удалить все фильтры', callback_data='clear_filters'))
-        keyboard.add(types.InlineKeyboardButton(text='Редактировать фильтры', callback_data='edit_filters'))
+        keyboard.add(types.InlineKeyboardButton(text='Добавить/удалить фильтры', callback_data='work_with_filters'))
         adds = ' (в виде регулярного выражения)'
         keyboard.add(types.InlineKeyboardButton(text='Вывод фильтров' + adds, callback_data='print_filters'))
-        keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='update_filters'))
+        keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='parse'))
         return keyboard
 
     @staticmethod
@@ -59,14 +60,15 @@ class KeyboardBuilder:
         keyboard = types.InlineKeyboardMarkup()
         keyboard.add(types.InlineKeyboardButton(text='Добавить фильтры', callback_data='append_filters'))
         keyboard.add(types.InlineKeyboardButton(text='Выборочно удалить фильтры', callback_data='delete_filters'))
+        keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='update_filters'))
         return keyboard
 
     @staticmethod
-    def make_append_filters():
+    def make_input_filters():
         keyboard = types.ReplyKeyboardMarkup()
-        keyboard.add(types.KeyboardButton(text='/save'))
-        keyboard.add(types.KeyboardButton(text='/cancel'))
+        keyboard.add(types.KeyboardButton(text='/endl'))
         return keyboard
+
 
 
 

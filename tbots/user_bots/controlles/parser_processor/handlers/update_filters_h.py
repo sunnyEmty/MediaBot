@@ -5,11 +5,14 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 
 class FilterState(StatesGroup):
-    app_filters = State()
+    input_filters = State()
     edit_filters = State()
+    append_f = State()
+    delete_some = State()
     save_st = State()
     dead_st = State()
     cancel_st = State()
+    work_with_filters = State()
 
 
 class UpdateFiltersH:
@@ -20,7 +23,7 @@ class UpdateFiltersH:
 
     @staticmethod
     def update_filters_handls():
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'print_filters')
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'print_filters', state='*')
         async def print_filters(message):
             filts = 'Исползуемые фильтры (записаны в виде регулярного выражения)\n' + ParserProcessor.parser.regular
             await InterfaceBot.bot.send_message(message.from_user.id, text=filts)
@@ -28,9 +31,9 @@ class UpdateFiltersH:
                                                 text='Что вам нужно?',
                                                 reply_markup=KeyboardBuilder.make_filters_kb())
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'clear_filters')
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'clear_filters', state='*')
         async def clear_filters(message):
-            ParserProcessor.parser.regular = '.*'
+            ParserProcessor.parser.clear_filters()
             try:
                 await ParserProcessor.parser.save_configs()
             except Exception:
@@ -38,55 +41,69 @@ class UpdateFiltersH:
                 await InterfaceBot.bot.send_message(message.from_user.id, text=msg)
             await InterfaceBot.bot.send_message(message.from_user.id, text='Успешно')
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'edit_filters')
-        async def edit_filters(message):
-            await FilterState.edit_filters.set()
-            await InterfaceBot.bot.send_message(message.from_user.id,
-                                                text='Что вам нужно?',
-                                                reply_markup=KeyboardBuilder.make_edit_filters_kb())
-
-
-
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'append_filters', state=FilterState.edit_filters)
-        async def append_filters(message):
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'work_with_filters', state='*')
+        async def work_with_filters(message):
             msg = 'Введите по одному в каждой строке. В качестве фильтра можно использовать нужную последовательность' \
-                  'символов, либо регулярное выражение\n Для завершения ввода нажмите /save, Для отмены нажмите /cancel'
+                  'символов, либо регулярное выражение\n Для завершения ввода нажмите /endl, Для отмены нажмите /cancel'
 
             await InterfaceBot.bot.send_message(message.from_user.id,
                                                 text=msg,
-                                                reply_markup=KeyboardBuilder.make_append_filters())
+                                                reply_markup=KeyboardBuilder.make_input_filters())
             UpdateFiltersH.buf[message.from_user.id] = []
-            await FilterState.app_filters.set()
+            await FilterState.input_filters.set()
 
-        @InterfaceBot.dp.message_handler(state=FilterState.app_filters)
-        async def append(message):
-            if message.text == '/save':
+        @InterfaceBot.dp.message_handler(state=FilterState.input_filters)
+        async def input_filters(message):
+            print(message.text == '/endl')
+            if message.text == '/endl':
                 await FilterState.edit_filters.set()
-                try:
-                    await UpdateFiltersH.save(message)
-                except:
-                    msg = 'Внутренняя ошибка. Повторитие попытку позже'
-                    await InterfaceBot.bot.send_message(message.from_user.id, text=msg)
-                await message.reply(text='Успешно\nЧто вам нужно?', reply_markup=KeyboardBuilder.make_edit_filters_kb())
+                await message.reply(text='Что хотите сделать?', reply_markup=KeyboardBuilder.make_edit_filters_kb())
                 return
             if message.text == '/cancel':
-                await FilterState.edit_filters.set()
                 del UpdateFiltersH.buf[message.from_user.id]
-                await message.reply(text='Что вам нужно?', reply_markup=KeyboardBuilder.make_edit_filters_kb())
+                await message.reply(text='Что вам нужно?', reply_markup=KeyboardBuilder.make_filters_kb())
                 return
-            UpdateFiltersH.buf[message.from_user.id].append(message.text)
+            if message.text not in UpdateFiltersH.buf[message.from_user.id]:
+                UpdateFiltersH.buf[message.from_user.id].append(message.text)
 
-        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'delete_filters')
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'append_filters',
+                                                state=FilterState.edit_filters)
+        async def append_filters(message):
+            ParserProcessor.parser.add_filters(UpdateFiltersH.buf[message.from_user.id])
+            try:
+                UpdateFiltersH.app_to_reg(message)
+                await ParserProcessor.parser.save_configs()
+
+            except Exception:
+                msg = 'Внутренняя ошибка. Повторитие попытку позже'
+                await InterfaceBot.bot.send_message(message.from_user.id, text=msg,
+                                                    reply_markup=KeyboardBuilder.make_filters_kb())
+            await InterfaceBot.bot.send_message(message.from_user.id, text='Успешно\nЧто вам нужно?',
+                                                reply_markup=KeyboardBuilder.make_filters_kb())
+
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'delete_filters',
+                                                state=FilterState.edit_filters)
         async def delete_filters(message):
-            pass
+            ParserProcessor.parser.erase_filters(UpdateFiltersH.buf[message.from_user.id])
+
+            try:
+                await ParserProcessor.parser.save_configs()
+            except Exception:
+                msg = 'Внутренняя ошибка. Повторитие попытку позже'
+                await InterfaceBot.bot.send_message(message.from_user.id, text=msg,
+                                                    reply_markup=KeyboardBuilder.make_filters_kb())
+            await InterfaceBot.bot.send_message(message.from_user.id, text='Успешно\nЧто вам нужно?',
+                                                reply_markup=KeyboardBuilder.make_filters_kb())
+
+
+
 
     @staticmethod
-    async def save(message):
-        new_part = '|'.join(UpdateFiltersH.buf[message.from_user.id])
-        if ParserProcessor.parser.regular != '.*':
-            ParserProcessor.parser.regular = '|'.join([ParserProcessor.parser.regular, new_part])
-        else:
-            ParserProcessor.parser.regular = new_part
+    def app_to_reg(message):
+        if not UpdateFiltersH.buf[message.from_user.id]:
+            del UpdateFiltersH.buf[message.from_user.id]
+            return
 
+        ParserProcessor.parser.add_filters(UpdateFiltersH.buf[message.from_user.id])
         del UpdateFiltersH.buf[message.from_user.id]
 
