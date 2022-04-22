@@ -71,9 +71,7 @@ class ParserProcessor(InterfaceBot):
         @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'change_account', state='*')
         async def change_account(message):
             await ContSt.change_account.set()
-            print(ParserProcessor.parser.buff)
             ParserProcessor.parser.drop_buf()
-            print(ParserProcessor.parser.buff)
             text = 'Введите id пользователя.\nЕсли ошиблись Нажмите на \"Отмена\"'
 
             await InterfaceBot.bot.send_message(message.from_user.id, text=text,
@@ -105,4 +103,8 @@ class ParserProcessor(InterfaceBot):
                                                 text='Что делать с фильтрами?',
                                                 reply_markup=KeyboardBuilder.make_filters_kb())
 
-
+        @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'update_stoplist', state='*')
+        async def update_stoplist(message):
+            await InterfaceBot.bot.send_message(message.from_user.id,
+                                                text='Что делать со стоплистом?',
+                                                reply_markup=KeyboardBuilder.make_update_stoplist_kb())

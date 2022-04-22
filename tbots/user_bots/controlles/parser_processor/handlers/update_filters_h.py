@@ -54,7 +54,6 @@ class UpdateFiltersH:
 
         @InterfaceBot.dp.message_handler(state=FilterState.input_filters)
         async def input_filters(message):
-            print(message.text == '/endl')
             if message.text == '/endl':
                 await FilterState.edit_filters.set()
                 await message.reply(text='Что хотите сделать?', reply_markup=KeyboardBuilder.make_edit_filters_kb())

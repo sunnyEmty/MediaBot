@@ -1,7 +1,7 @@
 from pyrogram import filters, Client
 from tbots.user_bots.user_bot import UserBot
-import re
 import os
+
 
 class Parser(UserBot):
     def __init__(self, path):
@@ -12,6 +12,7 @@ class Parser(UserBot):
         self.pic_format = self._configs[7].split(' = ')
         self.pic_format = '.' + self.pic_format[1] if len(self.pic_format) > 1 else ''
         self.regular = self._configs[8].split(' = ')[1]
+        self.stop_list = eval(self._configs[9].split(' = ')[1])
 
         self.buff_changed_ = False
         self.buff['donner'] = []
@@ -26,7 +27,8 @@ class Parser(UserBot):
                           'get_media = ' + str(self.get_media),
                           'media_path = ' + str(self.media_path),
                           'pic_format = ' + str(self.pic_format)[1:],
-                          'regular = ' + self.regular])
+                          'regular = ' + self.regular,
+                          'stop_list = ' + str(self.stop_list)])
 
     async def save_configs(self):
         with open(self._path, 'w') as fl:
@@ -67,21 +69,14 @@ class Parser(UserBot):
         else:
             self.regular = '|'.join(last_filts)
 
+    def add_stoplist(self, users):
+        self.stop_list = list(set(tuple(self.stop_list + users)))
+        return
 
-
-
-
-
-
-
-
-
-    def set_keywords(self, keywords, complete_match=None):
-        pass
-
-
-
-
+    def erase_stoplist(self, users):
+        for user in users:
+            if user in self.stop_list:
+                self.stop_list.remove(user)
 
     def add_donner(self, new_donner):
         self.donners.append(new_donner)
@@ -110,22 +105,25 @@ class Parser(UserBot):
 
         @self.client.on_message(filters.chat(self.donners) & filters.regex(self.regular))
         def get_post(client, message):
-            print(message.text)
             if not self.power_on:
+                return
+
+            username = message.from_user.username if message.from_user.username else 'NaN'
+            if username in self.stop_list or username == 'NaN':
                 return
 
             self.buff_changed_ = True
             text = message.caption if message.caption else message.text
-            inp = (str(text), '@' + str(message.chat.username), self.get_media_path(message))
+            text = text.replace('\"', '')
+            text = text.replace('\'', '')
+            inp = (str(text), '@' + str(username), self.get_media_path(message))
             put_message = 'INSERT INTO Messages (MESSAGE, LOGIN, MEDIA) values ' + str(inp)
 
+            put_user = 'INSERT INTO Users (LOGIN) values (\'' + '@' + username + '\');'
+            find_key = 'SELECT 1 FROM USERS WHERE login = \'' + '@' + str(username) + '\';'
+            add_user = True if self.get_request(find_key) is None else False
 
-            put_user = 'INSERT INTO Users (LOGIN) values (\'' + '@' + str(message.chat.username) + '\');'
-            if self.db_request(put_user) and self.db_request(put_message):
+            if self.put_request(put_user, send_req=add_user) and self.put_request(put_message):
                 pass
             else:
                 print("Ошбика связи с базой данных")
-
-            #await self.client.send_message(chat_id=981873870, text=message.text)
-
-#5056351011

@@ -11,8 +11,6 @@ class ChangeAccountH:
     @staticmethod
     def change_account_handls():
 
-
-
         @InterfaceBot.dp.message_handler(state=ContSt.update_api_id)
         async def update_api_id(message):
 

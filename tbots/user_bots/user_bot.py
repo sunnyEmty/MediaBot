@@ -1,7 +1,8 @@
-from pyrogram import Client, idle
+from pyrogram import Client
 import asyncio
 from psycopg2 import Error
 import psycopg2
+
 
 class UserBot:
     loop = asyncio.get_event_loop()
@@ -44,14 +45,15 @@ class UserBot:
     def init_signals(self):
         pass
 
-
     def change_account(self, new_id, new_hash):
         self.api_id = new_id
         self.api_hash = new_hash
         self.save_configs()
 
     @staticmethod
-    def db_request(query):
+    def put_request(query, send_req=True):
+        if not send_req:
+            return True
         connection = False
         cursor = False
         err = True
@@ -71,6 +73,25 @@ class UserBot:
                 connection.close()
                 cursor.close()
 
+    @staticmethod
+    def get_request(query):
+        connection = False
+        cursor = False
+        try:
+            connection = psycopg2.connect(user="postgres",
+                                          password="123",
+                                          host="127.0.0.1",
+                                          port="5432")
+            cursor = connection.cursor()
+            cursor.execute(query)
+            connection.commit()
+            return cursor.fetchone()
+        except (Exception, Error):
+            return 'ERROR'
+        finally:
+            if connection:
+                connection.close()
+                cursor.close()
 
     async def _start_user_bot(self):
         await self.client.start()
@@ -78,16 +99,9 @@ class UserBot:
     def run_user_bot(self):
         UserBot.loop.create_task(self._start_user_bot())
 
-
     def login(self):
         self.client.start()
         self.client.stop()
 
     async def pause_user_bot(self):
         await self.client.stop()
-
-
-
-
-
-

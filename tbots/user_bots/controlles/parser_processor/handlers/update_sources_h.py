@@ -2,6 +2,7 @@ from tbots.interface_bot import InterfaceBot
 from tbots.user_bots.controlles.parser_processor.parser_processor import ParserProcessor, ContSt
 from tbots.make_keyboards import KeyboardBuilder
 
+
 class UpdateSourcesH:
     @staticmethod
     def build():
@@ -77,7 +78,8 @@ class UpdateSourcesH:
                     if message.text == '/endl':
                         await ParserProcessor.parser.save_configs()
                         await ContSt.parser.set()
-                        await InterfaceBot.bot.send_message(message.from_user.id, text='Удаление прошло успешно')
+                        await InterfaceBot.bot.send_message(message.from_user.id, text='Удаление прошло успешно',
+                                                            reply_markup=KeyboardBuilder.make_sources_kb())
                     else:
                         await InterfaceBot.bot.send_message(message.from_user.id, text='У меня нет такого')
 
@@ -112,7 +114,8 @@ class UpdateSourcesH:
                         ParserProcessor.parser.donners += ParserProcessor.parser.buff['donner']
                         ParserProcessor.parser.buff['donner'].clear()
                         await ParserProcessor.parser.save_configs()
-                        await InterfaceBot.bot.send_message(message.from_user.id, text='Список успешно обновлен!!')
+                        await InterfaceBot.bot.send_message(message.from_user.id, text='Список успешно обновлен!!',
+                                                            reply_markup=KeyboardBuilder.make_sources_kb())
             except Exception:
                 msg = 'Внутренняя ошибка. Повторитие попытку позже'
                 await InterfaceBot.bot.send_message(message.from_user.id, text=msg)

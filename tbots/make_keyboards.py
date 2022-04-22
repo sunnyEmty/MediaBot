@@ -26,7 +26,6 @@ class KeyboardBuilder:
         keyboard.add(types.InlineKeyboardButton(text='Работа с источниками', callback_data='update_sources'))
         keyboard.add(types.InlineKeyboardButton(text='Работа с фильтрами', callback_data='update_filters'))
         keyboard.add(types.InlineKeyboardButton(text='Работа со стоплистом', callback_data='update_stoplist'))
-        keyboard.add(types.InlineKeyboardButton(text='Сообщения администрации', callback_data='update_admin_msg'))
         keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='back_to_main'))
         return keyboard
 
@@ -69,7 +68,19 @@ class KeyboardBuilder:
         keyboard.add(types.KeyboardButton(text='/endl'))
         return keyboard
 
+    @staticmethod
+    def make_update_stoplist_kb():
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text='Отчистить стоплист', callback_data='clear_stoplist'))
+        keyboard.add(types.InlineKeyboardButton(text='Добавить/удалить пользователей', callback_data='edit_stoplist'))
+        keyboard.add(types.InlineKeyboardButton(text='Вывести стоплист', callback_data='print_stoplist'))
+        keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='parse'))
+        return keyboard
 
-
-
-
+    @staticmethod
+    def make_edit_stoplist_kb():
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text='Добавить пользователей', callback_data='append_users_sl'))
+        keyboard.add(types.InlineKeyboardButton(text='Удалить', callback_data='delete_users_sl'))
+        keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='update_stoplist'))
+        return keyboard

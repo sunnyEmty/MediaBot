@@ -4,6 +4,7 @@ from tbots.user_bots.parser_bot.parser import Parser
 from tbots.user_bots.controlles.parser_processor.handlers.change_account_h import ChangeAccountH
 from tbots.user_bots.controlles.parser_processor.handlers.update_filters_h import UpdateFiltersH
 from tbots.user_bots.controlles.parser_processor.handlers.update_sources_h import UpdateSourcesH
+from tbots.user_bots.controlles.parser_processor.handlers.update_stoplist_h import UpdateStoplistH
 from tbots.user_bots.user_bot import UserBot
 from aiogram import executor
 
@@ -16,10 +17,9 @@ def init_system():
     ChangeAccountH.build()
     UpdateFiltersH.build()
     UpdateSourcesH.build()
+    UpdateStoplistH.build()
 
 
 if __name__ == '__main__':
     init_system()
     executor.start_polling(InterfaceBot.dp, skip_updates=True, loop=UserBot.loop)
-
-
