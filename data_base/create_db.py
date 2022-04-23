@@ -1,11 +1,12 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import json
+
+with open('database_conf.json', 'r', encoding='utf-8') as f:
+    res = json.load(f)
 
 # Подключение к существующей базе данных
-connection = psycopg2.connect(user="postgres",
-                              password="123",
-                              host="127.0.0.1",
-                              port="5432")
+connection = psycopg2.connect(**res)
 connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 # Курсор для выполнения операций с базой данных

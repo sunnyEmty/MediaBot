@@ -2,7 +2,7 @@ from pyrogram import Client
 import asyncio
 from psycopg2 import Error
 import psycopg2
-
+import json
 
 class UserBot:
     loop = asyncio.get_event_loop()
@@ -23,6 +23,9 @@ class UserBot:
             'api_id': None,
             'api_hash': None,
         }
+        with open('data_base/database_conf.json', 'r', encoding='utf-8') as f:
+            self.data_base = json.load(f)
+        2
 
     def _make_configs(self):
         return '\n'.join(['[pyrogram]',
@@ -50,18 +53,14 @@ class UserBot:
         self.api_hash = new_hash
         self.save_configs()
 
-    @staticmethod
-    def put_request(query, send_req=True):
+    def put_request(self, query, send_req=True):
         if not send_req:
             return True
         connection = False
         cursor = False
         err = True
         try:
-            connection = psycopg2.connect(user="postgres",
-                                          password="123",
-                                          host="127.0.0.1",
-                                          port="5432")
+            connection = psycopg2.connect(**self.data_base)
             cursor = connection.cursor()
             cursor.execute(query)
             connection.commit()
@@ -73,15 +72,11 @@ class UserBot:
                 connection.close()
                 cursor.close()
 
-    @staticmethod
-    def get_request(query):
+    def get_request(self, query):
         connection = False
         cursor = False
         try:
-            connection = psycopg2.connect(user="postgres",
-                                          password="123",
-                                          host="127.0.0.1",
-                                          port="5432")
+            connection = psycopg2.connect(**self.data_base)
             cursor = connection.cursor()
             cursor.execute(query)
             connection.commit()

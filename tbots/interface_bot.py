@@ -19,6 +19,7 @@ class InterfaceBot:
             InterfaceBot.token = res['token']
             InterfaceBot.bot = Bot(token=InterfaceBot.token)
             InterfaceBot.path = path
+
         InterfaceBot.dp = Dispatcher(InterfaceBot.bot, storage=MemoryStorage())
         InterfaceBot.set_start_signals()
 
