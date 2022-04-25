@@ -84,3 +84,9 @@ class KeyboardBuilder:
         keyboard.add(types.InlineKeyboardButton(text='Удалить', callback_data='delete_users_sl'))
         keyboard.add(types.InlineKeyboardButton(text='Назад', callback_data='update_stoplist'))
         return keyboard
+
+    @staticmethod
+    def make_btn(text, callback_data):
+        keyboard = types.InlineKeyboardMarkup()
+        keyboard.add(types.InlineKeyboardButton(text=text, callback_data=callback_data))
+        return keyboard

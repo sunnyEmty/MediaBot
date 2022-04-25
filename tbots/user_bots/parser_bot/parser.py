@@ -1,42 +1,51 @@
+import pyrogram.types
 from pyrogram import filters, Client
 from tbots.user_bots.user_bot import UserBot
 import os
-
+from tbots.bot_exeoptions import DonnerNameException
 
 class Parser(UserBot):
     def __init__(self, path):
         super().__init__(path, 'Parser')
-        self.donners = eval(self._configs[4].split(' = ')[1])
-        self.get_media = eval(self._configs[5].split(' = ')[1])
-        self.media_path = self._configs[6].split(' = ')[1]
-        self.pic_format = self._configs[7].split(' = ')
+        self.donners = eval(self.configs[4].split(' = ')[1])
+        self.get_media = eval(self.configs[5].split(' = ')[1])
+        self.media_path = self.configs[6].split(' = ')[1]
+        self.pic_format = self.configs[7].split(' = ')
         self.pic_format = '.' + self.pic_format[1] if len(self.pic_format) > 1 else ''
-        self.regular = self._configs[8].split(' = ')[1]
-        self.stop_list = eval(self._configs[9].split(' = ')[1])
-
+        self.regular = self.configs[8].split(' = ')[1]
+        self.stop_list = eval(self.configs[9].split(' = ')[1])
         self.buff_changed_ = False
         self.buff['donner'] = []
         self.init_signals()
+        self.client.connect()
 
-    def _make_configs(self):
-        return '\n'.join(['[pyrogram]',
-                          'api_id = ' + str(self.api_id),
-                          'api_hash = ' + self.api_hash,
-                          'power_on = ' + str(self.power_on),
+    def make_configs(self):
+        conf = super().make_configs()
+        new = '\n'.join([
                           'donner = ' + str(self.donners),
                           'get_media = ' + str(self.get_media),
                           'media_path = ' + str(self.media_path),
                           'pic_format = ' + str(self.pic_format)[1:],
                           'regular = ' + self.regular,
                           'stop_list = ' + str(self.stop_list)])
+        return '\n'.join([conf, new])
 
     async def save_configs(self):
-        with open(self._path, 'w') as fl:
-            fl.write(self._make_configs())
+
         await self.client.stop()
-        self.client = Client(self.name, api_id=self.api_id, api_hash=self.api_hash)
+        if not os.path.exists(self.name + '.session'):
+            self.client = Client(self.name,
+                                 api_id=self.buff['api_id'],
+                                 api_hash=self.buff['api_hash'],
+                                 phone_number=self.buff['phone'],
+                                 password=self.buff['password'])
+        else:
+            self.client = Client(self.name, api_id=self.api_id, api_hash=self.api_hash)
+        with open(self._path, 'w') as fl:
+            fl.write(self.make_configs())
         self.run_user_bot()
         self.init_signals()
+
 
     def clear_filters(self):
         self.regular = '.*'
@@ -101,12 +110,17 @@ class Parser(UserBot):
             print('Ошибка загрузки файла:', file_name)
         return file_name
 
+    def join_chats(self):
+        for chat in self.donners:
+            self.client.join_chat(chat)
+
     def init_signals(self):
 
         @self.client.on_message(filters.chat(self.donners) & filters.regex(self.regular))
-        def get_post(client, message):
+        async def get_post(client, message):
             if not self.power_on:
                 return
+            print(message.chat.title, message.chat.id)
 
             username = message.from_user.username if message.from_user.username else 'NaN'
             if username in self.stop_list or username == 'NaN':

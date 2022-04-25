@@ -8,6 +8,8 @@ class ContSt(StatesGroup):
     change_account = State()
     update_api_id = State()
     update_api_hash = State()
+    rebuild_bot = State()
+    get_phone = State()
 
     update_checkbox = State()
 

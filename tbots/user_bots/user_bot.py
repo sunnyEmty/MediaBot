@@ -9,13 +9,14 @@ class UserBot:
 
     def __init__(self, path, name='UserBot'):
         with open(path) as f:
-            self._configs = f.read().splitlines()
-            self.api_id = self._configs[1].split(' = ')[1]
-            self.api_hash = self._configs[2].split(' = ')[1]
-            self.power_on = self._configs[3].split(' = ')[1]
-        self.client = Client(name, api_id=self.api_id, api_hash=self.api_hash)
+            self.configs = f.read().splitlines()
+            self.api_id = self.configs[1].split(' = ')[1]
+            self.api_hash = self.configs[2].split(' = ')[1]
+            self.power_on = self.configs[3].split(' = ')[1]
+        self.client = Client(name, api_id=self.api_id,
+                                   api_hash=self.api_hash)
         self._path = path
-        self.power_on = True
+        self.power_on = False
         self.login()
         self.name = name
         self.run_user_bot()
@@ -25,9 +26,8 @@ class UserBot:
         }
         with open('data_base/database_conf.json', 'r', encoding='utf-8') as f:
             self.data_base = json.load(f)
-        2
 
-    def _make_configs(self):
+    def make_configs(self):
         return '\n'.join(['[pyrogram]',
                           'api_id = ' + str(self.api_id),
                           'api_hash = ' + self.api_hash,
@@ -37,9 +37,11 @@ class UserBot:
         self.buff['api_id'] = None
         self.buff['api_hash'] = None
 
+
     async def save_configs(self):
+
         with open(self._path, 'w') as fl:
-            fl.write(self._make_configs())
+            fl.write(self.make_configs())
             await self.client.stop()
             self.client = Client(self.name, api_id=self.api_id, api_hash=self.api_hash)
             self.login()
