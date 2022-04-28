@@ -12,7 +12,7 @@ class Parser(UserBot):
         self.donners = eval(self.configs[4].split(' = ')[1])
         self.get_media = eval(self.configs[5].split(' = ')[1])
         self.media_path = self.configs[6].split(' = ')[1]
-        self.pic_format = self.configs[7].split(' = ')
+        self.pic_format = self.configs[7].split(' = ')[1]
         self.pic_format = '.' + self.pic_format[1] if len(self.pic_format) > 1 else ''
         self.regular = self.configs[8].split(' = ')[1]
         self.stop_list = eval(self.configs[9].split(' = ')[1])
@@ -34,7 +34,7 @@ class Parser(UserBot):
 
     async def save_configs(self):
 
-        await self.client.stop()
+        await self.client.stop(block=True)
         if not os.path.exists(self.name + '.session'):
             self.client = Client(self.name,
                                  api_id=self.buff['api_id'],
@@ -144,4 +144,4 @@ class Parser(UserBot):
             if self.put_request(put_user, send_req=add_user) and self.put_request(put_message):
                 pass
             else:
-                print("Ошбика связи с базой данных")
+                pass

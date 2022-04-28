@@ -60,6 +60,7 @@ class ParserProcessor(InterfaceBot):
         @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'enable_disable', state='*')
         async def enable_disable(message):
             ParserProcessor.parser.power_on = not ParserProcessor.parser.power_on
+            await ParserProcessor.parser.save_configs()
             if not ParserProcessor.parser.power_on:
                 ParserProcessor.parser.client.set_parse_mode(None)
             else:
@@ -84,7 +85,7 @@ class ParserProcessor(InterfaceBot):
         @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'update_checkbox', state='*')
         async def update_checkbox(message):
             ParserProcessor.parser.get_media = not ParserProcessor.parser.get_media
-            InterfaceBot.save_configs()
+            await ParserProcessor.parser.save_configs()
             get_media = ParserProcessor.parser.get_media
             power_on = ParserProcessor.parser.power_on
             await InterfaceBot.bot.send_message(message.from_user.id,

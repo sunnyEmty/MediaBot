@@ -12,11 +12,10 @@ class UserBot:
             self.configs = f.read().splitlines()
             self.api_id = self.configs[1].split(' = ')[1]
             self.api_hash = self.configs[2].split(' = ')[1]
-            self.power_on = self.configs[3].split(' = ')[1]
+            self.power_on = eval(self.configs[3].split(' = ')[1])
         self.client = Client(name, api_id=self.api_id,
                                    api_hash=self.api_hash)
         self._path = path
-        self.power_on = False
         self.login()
         self.name = name
         self.run_user_bot()
