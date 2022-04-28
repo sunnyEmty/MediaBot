@@ -1,3 +1,5 @@
+import re
+
 import pyrogram.types
 from pyrogram import filters, Client
 from tbots.user_bots.user_bot import UserBot
@@ -99,13 +101,13 @@ class Parser(UserBot):
             self.donners.remove(donner_name)
         self.save_configs()
 
-    def get_media_path(self, message):
+    async def get_media_path(self, message):
         if not self.get_media or message.media != 'photo':
             return 'NaN'
         count = len(os.listdir(path=self.media_path))
         file_name = self.media_path + '/' + str(count) + self.pic_format
         try:
-            self.client.download_media(file_name=file_name, message=message, block=False)
+            await self.client.download_media(file_name=file_name, message=message, block=False)
         except Exception:
             print('Ошибка загрузки файла:', file_name)
         return file_name
@@ -116,11 +118,10 @@ class Parser(UserBot):
 
     def init_signals(self):
 
-        @self.client.on_message(filters.chat(self.donners) & filters.regex(self.regular))
+        @self.client.on_message(filters.chat(self.donners) & filters.regex(self.regular, flags=re.IGNORECASE))
         async def get_post(client, message):
             if not self.power_on:
                 return
-            print(message.chat.title, message.chat.id)
 
             username = message.from_user.username if message.from_user.username else 'NaN'
             if username in self.stop_list or username == 'NaN':
@@ -130,7 +131,10 @@ class Parser(UserBot):
             text = message.caption if message.caption else message.text
             text = text.replace('\"', '')
             text = text.replace('\'', '')
-            inp = (str(text), '@' + str(username), self.get_media_path(message))
+            try:
+                inp = (str(text), '@' + str(username), await self.get_media_path(message))
+            except Exception:
+                pass
             put_message = 'INSERT INTO Messages (MESSAGE, LOGIN, MEDIA) values ' + str(inp)
 
             put_user = 'INSERT INTO Users (LOGIN) values (\'' + '@' + username + '\');'

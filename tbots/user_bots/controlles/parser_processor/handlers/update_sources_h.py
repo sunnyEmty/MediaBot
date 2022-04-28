@@ -18,7 +18,7 @@ class UpdateSourcesH:
             msg = 'Введите имена чатов. ' \
                   'Каждый чат в отдельном сообщении. Когда завиршите ввод - нажмите на кнопку /endl'
             await InterfaceBot.bot.send_message(message.from_user.id, text=msg,
-                                                reply_markup=KeyboardBuilder.make_cancel_btn('edit_sources'))
+                                                reply_markup=KeyboardBuilder.make_cancel_btn('update_sources'))
             ParserProcessor.parser.buff['donner'] = []
             await ContSt.append_sources.set()
 
@@ -46,12 +46,11 @@ class UpdateSourcesH:
         @InterfaceBot.dp.message_handler(commands=['del'], state=ContSt.edit_sources)
         async def remove_sources(message):
             msg = 'Введите имена чатов. ' \
-                  'Каждый чат в отдельном сообщении. Когда завиршите ввод - нажмите на кнопку /endl'
+                  'Каждый чат в отдельном сообщении. Когда завиршите ввод - нажмите на /endl'
             await InterfaceBot.bot.send_message(message.from_user.id, text=msg)
             msg = 'Если ошиблись введите \"Отмена\"'
             await InterfaceBot.bot.send_message(message.from_user.id, text=msg,
                                                 reply_markup=KeyboardBuilder.make_cancel_btn('edit_sources'))
-            await InterfaceBot.bot.send_message(message.from_user.id, text='Что вам нужно?')
             await ContSt.remove_sources.set()
 
 
@@ -63,7 +62,7 @@ class UpdateSourcesH:
                     ParserProcessor.parser.buff['donner'].append(message.text)
                 else:
                     if message.text == '/endl':
-                        ParserProcessor.parser.donners.remove(message.text)
+
                         for donner in ParserProcessor.parser.buff['donner']:
                             ParserProcessor.parser.donners.remove(donner)
 

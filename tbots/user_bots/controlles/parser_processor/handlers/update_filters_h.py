@@ -39,7 +39,9 @@ class UpdateFiltersH:
             except Exception:
                 msg = 'Внутренняя ошибка. Повторитие попытку позже'
                 await InterfaceBot.bot.send_message(message.from_user.id, text=msg)
-            await InterfaceBot.bot.send_message(message.from_user.id, text='Успешно')
+            await InterfaceBot.bot.send_message(message.from_user.id,
+                                                text='Успешно',
+                                                reply_markup=KeyboardBuilder.make_filters_kb())
 
         @InterfaceBot.dp.callback_query_handler(lambda call: call.data == 'work_with_filters', state='*')
         async def work_with_filters(message):
