@@ -95,7 +95,6 @@ class Parser(UserBot):
 
     def delete_donner(self, donner_name, delete_all=False):
         if delete_all:
-            pass
             self.donners.clear()
         else:
             self.donners.remove(donner_name)

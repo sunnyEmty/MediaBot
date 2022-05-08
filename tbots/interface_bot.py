@@ -35,7 +35,7 @@ class InterfaceBot:
 
     @staticmethod
     def set_start_signals():
-        @InterfaceBot.dp.message_handler(commands=['start'])
+        @InterfaceBot.dp.message_handler(commands=['start'], state='*')
         async def get_start_msg(message):
             await InterfaceBot.bot.send_message(message.from_user.id,
                                                 text='Выбери нужного бота.',

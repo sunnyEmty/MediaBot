@@ -103,6 +103,7 @@ class UpdateSourcesH:
                 else:
                     ParserProcessor.parser.donners = ParserProcessor.parser.buff['donner']
                     await ParserProcessor.parser.save_configs()
+                    await ContSt.edit_sources.set()
                     await InterfaceBot.bot.send_message(message.from_user.id, text='Список успешно обновлен!!',
                                                         reply_markup=KeyboardBuilder.make_sources_kb())
                     ParserProcessor.parser.buff['donner'].clear()
