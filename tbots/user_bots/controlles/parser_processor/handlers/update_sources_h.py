@@ -3,8 +3,6 @@ import pyrogram.errors
 from tbots.interface_bot import InterfaceBot
 from tbots.user_bots.controlles.parser_processor.parser_processor import ParserProcessor, ContSt
 from tbots.make_keyboards import KeyboardBuilder
-from tbots.bot_exeoptions import DonnerNameException
-import re
 
 class UpdateSourcesH:
     @staticmethod
@@ -101,7 +99,7 @@ class UpdateSourcesH:
                         ParserProcessor.parser.buff['donner'].append(message.text)
 
                 else:
-                    ParserProcessor.parser.donners = ParserProcessor.parser.buff['donner']
+                    ParserProcessor.parser.donners = ParserProcessor.parser.buff['donner'].copy()
                     await ParserProcessor.parser.save_configs()
                     await ContSt.edit_sources.set()
                     await InterfaceBot.bot.send_message(message.from_user.id, text='Список успешно обновлен!!',

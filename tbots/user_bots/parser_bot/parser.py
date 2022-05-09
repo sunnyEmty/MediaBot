@@ -122,6 +122,9 @@ class Parser(UserBot):
             if not self.power_on:
                 return
 
+            if not message.from_user:
+                return
+
             username = message.from_user.username if message.from_user.username else 'NaN'
             if username in self.stop_list or username == 'NaN':
                 return
